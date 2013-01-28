@@ -106,30 +106,27 @@ Sass 樣式表跟視圖(views)的運作方式不同。
 
 ### 選項
 
-Options can be set by setting the {Sass::Plugin::Configuration#options Sass::Plugin#options} hash
-in `environment.rb` in Rails or `config.ru` in Rack...
+選項可設定在 Rails 的 `environment.rb` 或是 Rack 的 `config.ru` 中 {Sass::Plugin::Configuration#options Sass::Plugin#options} hash 內...
 
     Sass::Plugin.options[:style] = :compact
 
-...or by setting the `Merb::Plugin.config[:sass]` hash in `init.rb` in Merb...
+...或是設定在 Merb 的 `init.rb` 中的 `Merb::Plugin.config[:sass]` ...
 
     Merb::Plugin.config[:sass][:style] = :compact
 
-...or by passing an options hash to {Sass::Engine#initialize}.
-All relevant options are also available via flags
-to the `sass` and `scss` command-line executables.
-Available options are:
+...或是將選項 hash 傳給 {Sass::Engine#initialize} 函式。
+所有相關的選項也都在 `sass` 與 `scss` 的命令列執行檔以 flag 的形式提供。
+可用的選項有：
 
 {#style-option} `:style`
-: Sets the style of the CSS output.
-  See [Output Style](#output_style).
+: 設定 CSS 輸出樣式
+  參考 [輸出樣式](#輸出樣式)。
 
 {#syntax-option} `:syntax`
-: The syntax of the input file, `:sass` for the indented syntax
-  and `:scss` for the CSS-extension syntax.
-  This is only useful when you're constructing {Sass::Engine} instances yourself;
-  it's automatically set properly when using {Sass::Plugin}.
-  Defaults to `:sass`.
+: 輸入檔案的語法，`:sass` 使用 SASS 的縮排語法，`:scss` 使用擴充 CSS 的 SCSS 語法。
+  這只有在您自己建立 {Sass::Engine} 的 instance 的時候才有用；
+  使用 {Sass::Plugin} 時會自動設定。
+  預設值為 `:sass`。
 
 {#property_syntax-option} `:property_syntax`
 : Forces indented-syntax documents to use one syntax for properties.
@@ -146,59 +143,49 @@ Available options are:
   This has no effect on SCSS documents.
 
 {#cache-option} `:cache`
-: Whether parsed Sass files should be cached,
-  allowing greater speed. Defaults to true.
+: 設定剖析 Sass 檔案時是否要使用快取，加快速度。預設為真。
 
 {#read_cache-option} `:read_cache`
-: If this is set and `:cache` is not,
-  only read the Sass cache if it exists,
-  don't write to it if it doesn't.
+: 若此設定為真但 `:cache` 為否，
+  則只有在 Sass 快取存在的時候才讀取，
+  不存在時不要寫入。
 
 {#cache_store-option} `:cache_store`
-: If this is set to an instance of a subclass of {Sass::CacheStores::Base},
-  that cache store will be used to store and retrieve
-  cached compilation results.
-  Defaults to a {Sass::CacheStores::Filesystem} that is
-  initialized using the [`:cache_location` option](#cache_location-option).
+: 若此設定被設在一個 {Sass::CacheStores::Base} 的子 Class 的 instance，
+  則使用該快取儲存與取回已快取的編譯結果。
+  預設值為 {Sass::CacheStores::Filesystem}，即
+  [`:cache_location` 選項](#cache_location-選項) 初始化的結果。
 
 {#never_update-option} `:never_update`
-: Whether the CSS files should never be updated,
-  even if the template file changes.
-  Setting this to true may give small performance gains.
-  It always defaults to false.
-  Only has meaning within Rack, Ruby on Rails, or Merb.
+: 是否不要更新 CSS 檔案，即便是樣板檔案已經改變了。
+  設定此為真可以得到小小的效能提升。
+  預設值永遠為否。
+  只對 Rack、Ruby on Rails、或是 Merb 環境有意義。
 
 {#always_update-option} `:always_update`
-: Whether the CSS files should be updated every
-  time a controller is accessed,
-  as opposed to only when the template has been modified.
-  Defaults to false.
-  Only has meaning within Rack, Ruby on Rails, or Merb.
+: 是否要在 controller 每次被存取時就更新 CSS 檔案，
+  而不是只有在樣板檔案改變時才更新。
+  預設值為否。
+  只對 Rack、Ruby on Rails、或是 Merb 環境有意義。
 
 {#always_check-option} `:always_check`
-: Whether a Sass template should be checked for updates every
-  time a controller is accessed,
-  as opposed to only when the server starts.
-  If a Sass template has been updated,
-  it will be recompiled and will overwrite the corresponding CSS file.
-  Defaults to false in production mode, true otherwise.
-  Only has meaning within Rack, Ruby on Rails, or Merb.
+: 是否要在 controller 每次被存取時就檢查樣板檔案是否有改變，
+  而不是只有在伺服器啟動時。
+  如果 Sass 樣板檔有更動，它會開始重新編譯且複寫相對的 CSS 檔案。
+  在 production 模式時預設為否，其他時候為真。
+  只對 Rack、Ruby on Rails、或是 Merb 環境有意義。
 
 {#poll-option} `:poll`
-: When true, always use the polling backend for {Sass::Plugin::Compiler#watch}
-  rather than the native filesystem backend.
+: 當設定為真時，永遠使用 {Sass::Plugin::Compiler#watch}，
+  而不是檔案系統提供的功能。
 
 {#full_exception-option} `:full_exception`
-: Whether an error in the Sass code
-  should cause Sass to provide a detailed description
-  within the generated CSS file.
-  If set to true, the error will be displayed
-  along with a line number and source snippet
-  both as a comment in the CSS file
-  and at the top of the page (in supported browsers).
-  Otherwise, an exception will be raised in the Ruby code.
-  Defaults to false in production mode, true otherwise.
-  Only has meaning within Rack, Ruby on Rails, or Merb.
+: 當 Sass 原始碼有錯誤時，產生的 CSS 檔案是否要提供完整的錯誤描述。
+  如果設定為真，錯誤、錯誤的行數、錯誤原始碼的節錄，會產生成 CSS 檔案的註解，
+  以及顯示在網頁上（若該瀏覽器支援的話）。
+  若設定為否，則錯誤會在 Ruby 執行時產生 exception。
+  在 production 模式時預設為否，其他時候為真。
+  只對 Rack、Ruby on Rails、或是 Merb 環境有意義。
 
 {#template_location-option} `:template_location`
 : A path to the root sass template directory for your application.
